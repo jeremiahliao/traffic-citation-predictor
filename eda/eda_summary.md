@@ -1,3 +1,7 @@
+Group Members:
+Jeremiah Liao
+Kevin Diaz (kjdiaz@calpoly.edu)
+
 # Traffic Violations Dataset
 
 We are classifying whether a police officer will issue a citation or a warning for a given a traffic stop. The dataset we are using is provided by Montomery County of Maryland, published on the US Government's Data Catalog, which contains a running record of all electronic traffic violations issued in the county ([link](https://catalog.data.gov/dataset/traffic-violations)). For this project, however, we are taking a cleaned dataset from Kaggle with only the traffic violations spanning from 2014 to 2016. ([link](https://www.kaggle.com/datasets/felix4guti/traffic-violations-in-usa/data)).
