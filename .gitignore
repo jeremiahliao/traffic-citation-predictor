@@ -1,3 +1,5 @@
 Traffic_Violations.csv
 Traffic_Violations.parquet
 Traffic_Violations_official.csv
+.DS_Store
+*_scratchwork.ipynb
