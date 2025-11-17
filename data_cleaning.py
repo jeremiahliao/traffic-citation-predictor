@@ -2,6 +2,21 @@ import difflib
 import re
 import pandas as pd
 
+CATEGORICAL_COLS = [
+    # driver information
+    'VehicleType',
+
+    # traffic stop information
+    'Charge', 'Arrest Type',
+]
+NUMERICAL_COLS = [
+    # binary columns
+    'Accident', 'Belts', 'Personal Injury', 'Property Damage', 'Fatal',
+    'Commercial License', 'HAZMAT', 'Commercial Vehicle', 'Alcohol',
+    'Work Zone', 'Contributed To Accident'
+]
+FEATURE_COLS = CATEGORICAL_COLS + NUMERICAL_COLS
+
 canonical_makes = [
     "ACURA","ALFA ROMEO","ASTON MARTIN","AUDI","BENTLEY","BMW","BUGATTI","BUICK",
     "CADILLAC","CHEVROLET","CHRYSLER","DODGE","FERRARI","FIAT","FORD","GENESIS","GMC",
@@ -152,6 +167,16 @@ def resolve_make(raw: str) -> str:
     return match[0] if match else "UNKNOWN"
 
 if __name__ == '__main__':
+    cols = [
+        'Date Of Stop', 'Time Of Stop', 'Agency', 'SubAgency', 'Description',
+       'Location', 'Latitude', 'Longitude', 'Accident', 'Belts',
+       'Personal Injury', 'Property Damage', 'Fatal', 'Commercial License',
+       'HAZMAT', 'Commercial Vehicle', 'Alcohol', 'Work Zone', 'State',
+       'VehicleType', 'Year', 'Make', 'Model', 'Color', 'Violation Type',
+       'Charge', 'Article', 'Contributed To Accident', 'Race', 'Gender',
+       'Driver City', 'Driver State', 'DL State', 'Arrest Type',
+       'Geolocation'
+    ]
     df = pd.read_csv('Traffic_Violations.csv')
 
     df['Make'] = df['Make'].apply(resolve_make)
@@ -162,8 +187,20 @@ if __name__ == '__main__':
     # inconsistency as to which state value is filled out, create one uniform column
     df['State'] = df[['State', 'DL State', 'Driver State']].bfill(axis=1).iloc[:, 0]
 
+    # fill in NaN with unknowns
     df['Model'] = df['Model'].fillna('Unknown')
-    df['Color'] = df['Color'].fillna('Color')
+    df['Color'] = df['Color'].fillna('Unknown')
+
+    # set NaN coordinates to center of Montomery County
+    df['Latitude'] = df['Latitude'].fillna(39.1547)
+    df['Longitude'] = df['Longitude'].fillna(-77.2405)
+
+    binary_cols = [
+        'Accident', 'Belts', 'Personal Injury', 'Property Damage', 'Fatal',
+        'Commercial License', 'HAZMAT', 'Commercial Vehicle', 'Alcohol',
+        'Work Zone', 'Contributed To Accident'
+    ]
+    df[binary_cols] = (df[binary_cols] == "Yes").astype(int)
 
     # keep only data with warnings and citations
     df = df[(df['Violation Type'] == 'Warning') | (df['Violation Type'] == 'Citation')]

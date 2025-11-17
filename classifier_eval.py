@@ -15,10 +15,11 @@ import plotly.graph_objects as go
 from classifiers.alwayscitation_classifier import AlwaysCitationClassifier
 from classifiers.alwayswarning_classifier import AlwaysWarningClassifier
 from classifiers.random_classifier import RandomClassifier
+from classifiers.rf_classifier import RFClassifier
+from data_cleaning import FEATURE_COLS
 
 
 FILE_PATH = "Traffic_Violations.parquet"
-FEATURE_COLS = []
 TEST_SIZE = 0.2
 RANDOM_STATE = 42
 
@@ -83,7 +84,7 @@ def main():
     print("Loading data...")
     df = pd.read_parquet(FILE_PATH)
 
-    X = df
+    X = df[FEATURE_COLS]
     y = (df["Violation Type"] == "Citation").astype(int)
 
     X_train, X_test, y_train, y_test = train_test_split(
@@ -92,8 +93,9 @@ def main():
 
     models = {
         "Random": RandomClassifier(),
-        "AlwaysCitation": AlwaysCitationClassifier(),
-        "AlwaysWarning": AlwaysWarningClassifier()
+        "Always Citation": AlwaysCitationClassifier(),
+        "Always Warning": AlwaysWarningClassifier(),
+        "Random Forest": RFClassifier(),
     }
 
     predictions = {}
