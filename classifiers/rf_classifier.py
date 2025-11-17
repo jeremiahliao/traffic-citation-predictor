@@ -19,7 +19,7 @@ class RFClassifier(BaseClassifier):
             steps = [
                 ("preproc", ColumnTransformer(
                     transformers = [
-                        ("oneHot", OneHotEncoder(), CATEGORICAL_COLS),
+                        ("oneHot", OneHotEncoder(handle_unknown="ignore"), CATEGORICAL_COLS),
                     ],
                     remainder="passthrough"
                 )),
