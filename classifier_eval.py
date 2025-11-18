@@ -79,6 +79,86 @@ def print_report(name, y_true, y_pred, y_proba):
     print("\nClassification Report:")
     print(classification_report(y_true, y_pred, digits=4, zero_division=0))
 
+def plot_confusion_matrices(y_true, pred_dict, out_html="confusion_matrices.html"):
+    models = list(pred_dict.keys())
+    heatmaps = []
+    annotations = []
+
+    for name in models:
+        cm = confusion_matrix(y_true, pred_dict[name]).astype(int)
+        tn, fp, fn, tp = cm.ravel()
+
+        z = [[tn, fp],
+             [fn, tp]]
+
+        annotation_text = [[str(z[i][j]) for j in range(2)] for i in range(2)]
+
+        heatmaps.append(
+            go.Heatmap(
+                z=z,
+                x=["Pred 0 (Warning)", "Pred 1 (Citation)"],
+                y=["True 0 (Warning)", "True 1 (Citation)"],
+                colorscale="Blues",
+                zmin=0,
+                zmax=max(tn, fp, fn, tp),
+                showscale=False,
+                visible=False
+            )
+        )
+
+        annotations.append([
+            dict(
+                x=j,
+                y=i,
+                text=annotation_text[i][j],
+                showarrow=False,
+                font=dict(color="black", size=16)
+            )
+            for i in range(2)
+            for j in range(2)
+        ])
+
+    heatmaps[0].visible = True
+    current_ann = annotations[0]
+
+    buttons = []
+    for i, name in enumerate(models):
+        visibility = [False] * len(models)
+        visibility[i] = True
+        buttons.append(
+            dict(
+                label=name,
+                method="update",
+                args=[
+                    {"visible": visibility},
+                    {"annotations": annotations[i],
+                     "title": f"Confusion Matrix — {name}"}
+                ]
+            )
+        )
+
+    fig = go.Figure(data=heatmaps)
+    fig.update_layout(
+        title=f"Confusion Matrix — {models[0]}",
+        xaxis_title="Predicted Label",
+        yaxis_title="True Label",
+        template="plotly_white",
+        annotations=current_ann,
+        updatemenus=[
+            dict(
+                type="dropdown",
+                x=1.15, y=1.15,
+                buttons=buttons,
+                showactive=True
+            )
+        ],
+        width=650,
+        height=550
+    )
+
+    fig.write_html(out_html, include_plotlyjs="cdn")
+    print(f"Saved confusion matrices: {out_html}")
+
 
 def main():
     print("Loading data...")
@@ -113,6 +193,7 @@ def main():
 
     plot_roc_curves(y_test, probabilities, out_html="roc_curve.html")
     plot_pr_curves(y_test, probabilities, out_html="pr_curve.html")
+    plot_confusion_matrices(y_test, predictions, out_html="confusion_matrices.html")
 
     print("\nSaved interactive plots:")
     print(" - roc_curve.html")

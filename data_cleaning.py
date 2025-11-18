@@ -205,4 +205,4 @@ if __name__ == '__main__':
     # keep only data with warnings and citations
     df = df[(df['Violation Type'] == 'Warning') | (df['Violation Type'] == 'Citation')]
 
-    df.to_parquet('Traffic_Violations.parquet')
+    df.to_parquet('Traffic_Violations.parquet', index=False)
