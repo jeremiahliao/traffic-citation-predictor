@@ -16,6 +16,8 @@ from classifiers.alwayscitation_classifier import AlwaysCitationClassifier
 from classifiers.alwayswarning_classifier import AlwaysWarningClassifier
 from classifiers.random_classifier import RandomClassifier
 from classifiers.rf_classifier import RFClassifier
+from classifiers.hgb_classifier import HGBClassifier
+from classifiers.heuristic import HeuristicClassifier
 from data_cleaning import FEATURE_COLS
 
 
@@ -163,6 +165,8 @@ def plot_confusion_matrices(y_true, pred_dict, out_html="confusion_matrices.html
 def main():
     print("Loading data...")
     df = pd.read_parquet(FILE_PATH)
+    top_255 = top_255 = df["Charge"].value_counts().nlargest(255).index
+    df = df[df["Charge"].isin(top_255)].copy()
 
     X = df[FEATURE_COLS]
     y = (df["Violation Type"] == "Citation").astype(int)
@@ -172,10 +176,12 @@ def main():
     )
 
     models = {
-        "Random": RandomClassifier(),
+        #"Random": RandomClassifier(),
         "Always Citation": AlwaysCitationClassifier(),
-        "Always Warning": AlwaysWarningClassifier(),
-        "Random Forest": RFClassifier(),
+        #"Always Warning": AlwaysWarningClassifier(),
+        "Heuristic": HeuristicClassifier(),
+        # "Random Forest": RFClassifier(),
+        "HGB": HGBClassifier()
     }
 
     predictions = {}

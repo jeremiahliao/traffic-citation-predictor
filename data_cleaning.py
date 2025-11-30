@@ -8,13 +8,31 @@ CATEGORICAL_COLS = [
 
     # traffic stop information
     'Charge', 'Arrest Type',
+
+    'Make',
+    'Race',
+    'Gender',
+    'SubAgency',
+    'dayofweek',
+    'hour',
 ]
 NUMERICAL_COLS = [
     # binary columns
-    'Accident', 'Belts', 'Personal Injury', 'Property Damage', 'Fatal',
-    'Commercial License', 'HAZMAT', 'Commercial Vehicle', 'Alcohol',
-    'Work Zone', 'Contributed To Accident'
+    #'Accident',
+    'Personal Injury',
+    #'Fatal',
+    'Commercial License',
+    #'HAZMAT',
+    'Alcohol',
+    #'Work Zone',
+    #'Contributed To Accident',
+    'Belts',
+    'Property Damage',
+    'Commercial Vehicle',
+
+    'Latitude', 'Longitude',
 ]
+
 FEATURE_COLS = CATEGORICAL_COLS + NUMERICAL_COLS
 
 canonical_makes = [
@@ -166,9 +184,28 @@ def resolve_make(raw: str) -> str:
     match = difflib.get_close_matches(first, canonical_makes, n=1, cutoff=0.65)
     return match[0] if match else "UNKNOWN"
 
+def add_time_features(df: pd.DataFrame) -> pd.DataFrame:
+    # Parse combined datetime
+    dt = pd.to_datetime(
+        df['Date Of Stop'] + " " + df['Time Of Stop'],
+        errors="coerce"
+    )
+
+    # If desired, drop rows with invalid dates/times
+    mask = dt.notna()
+    df = df[mask].copy()
+    dt = dt[mask]
+
+    # Core features: day of week and hour of day
+    df["dayofweek"] = dt.dt.dayofweek # 0=Mon, 6=Sun
+    df["hour"] = dt.dt.hour # 0–23
+
+    return df
+
+
 if __name__ == '__main__':
     cols = [
-        'Date Of Stop', 'Time Of Stop', 'Agency', 'SubAgency', 'Description',
+       'Date Of Stop', 'Time Of Stop', 'Agency', 'SubAgency', 'Description',
        'Location', 'Latitude', 'Longitude', 'Accident', 'Belts',
        'Personal Injury', 'Property Damage', 'Fatal', 'Commercial License',
        'HAZMAT', 'Commercial Vehicle', 'Alcohol', 'Work Zone', 'State',
@@ -204,5 +241,7 @@ if __name__ == '__main__':
 
     # keep only data with warnings and citations
     df = df[(df['Violation Type'] == 'Warning') | (df['Violation Type'] == 'Citation')]
+
+    df = add_time_features(df)
 
     df.to_parquet('Traffic_Violations.parquet', index=False)
