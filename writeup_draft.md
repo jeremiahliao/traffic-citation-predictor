@@ -1,5 +1,5 @@
 Group Members:
-Jeremiah Liao
+Jeremiah Liao (jjliao@calpoly.edu)
 Kevin Diaz (kjdiaz@calpoly.edu)
 
 For our initial draft we focused on building a few baseline classifiers and outlining how we plan to engineer features moving forward. The goal of this classifier is to take the attributes of a traffic stop and determine whether it results in a citation or a warning.

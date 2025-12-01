@@ -153,10 +153,41 @@ charge_to_description_map = {
     '21-902(c1)': 'DRIVING VEH. WHILE SO FAR IMPAIRED BY DRUGS AND ALCOHOL CANNOT DRIVE SAFELY',
     '21-209(3)': 'FAILING TO STOP UNTIL SAFE TO CONTINUE THROUGH INTERSECTION W/NONFUNCT. TRAF. SIGNAL',
     '21-801(a)': 'DRIVING VEHICLE IN EXCESS OF REASONABLE AND PRUDENT SPEED ON HIGHWAY',
-    '21-209(3)': 'FAILING TO STOP UNTIL SAFE TO CONTINUE THROUGH INTERSECTION W/NONFUNCT. TRAF. SIGNAL',
     '16-101(a)': 'DRIVING MOTOR VEHICLE ON HIGHWAY WITHOUT REQUIRED LICENSE AND AUTHORIZATION',
     '11-393.78': 'OPERATING MOTOR VEHICLE WITH INADEQUATE WINDSHIELD WIPERS-no fluid',
     '13-411(f)': 'DISPLAYING EXPIRED REGISTRATION PLATE ISSUED BY ANY STATE',
+}
+
+vehicle_type_map = {
+    1: 'Motorcycle',            # two wheeled
+    2: 'Automobile',            # automobile
+    3: 'Station Wagon',         # automobile
+    4: 'Limousine',             # specialty/other
+    5: 'Light Duty Truck',      # automobile
+    6: 'Heavy Duty Truck',      # automobile
+    7: 'Truck/Road Tractor',    # specialty/other
+    8: 'Recreational Vehicle',  # rv/mobile home
+    9: 'Farm Vehicle',          # specialty/other
+    10: 'Transit Bus',          # bus
+    11: 'Cross Country Bus',    # bus
+    12: 'School Bus',           # bus
+    13: 'Ambulance(Emerg)',      # emergency
+    14: 'Ambulance(Non-Emerg)', # non-emergency
+    15: 'Fire(Emerg)',          # emergency
+    16: 'Fire(Non-Emerg)',      # non-emergency
+    17: 'Police(Emerg)',        # emergency
+    18: 'Police(Non-Emerg)',    # non-emergency
+    19: 'Moped',                # two wheeled
+    20: 'Commerical Rig',       # specialty/other
+    21: 'Tandem Trailer',       # trailer
+    22: 'Mobile Home',          # rv/mobile home
+    23: 'Travel/Home Trailer',  # rv/mobile home
+    24: 'Camper',               # rv/mobile home
+    25: 'Utility Trailer',      # trailer
+    26: 'Boat Trailer',         # trailer
+    27: 'Farm Equipment',       # specialty/other
+    28: 'Other',                # other
+    29: 'Other',                # map unknown to other
 }
 
 def normalize_make(x: str) -> str:
@@ -238,6 +269,9 @@ if __name__ == '__main__':
         'Work Zone', 'Contributed To Accident'
     ]
     df[binary_cols] = (df[binary_cols] == "Yes").astype(int)
+
+    # clean & reduce dimensionality of vehicle type
+    df['VehicleType'] = df['VehicleType'].str.split('-').str[0].astype(int).map(vehicle_type_map)
 
     # keep only data with warnings and citations
     df = df[(df['Violation Type'] == 'Warning') | (df['Violation Type'] == 'Citation')]
