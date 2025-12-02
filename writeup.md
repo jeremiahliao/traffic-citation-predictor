@@ -44,7 +44,7 @@ Upon initial glance, these columns appear to be irrelevant. Only a small fractio
 
 The original csv file contained 1,018,634 records. The data was already very clean, with very few missing values. For most missing values, we either filled it with an 'Unknown' label or imputed the value using other columns or mean values. 
 
-An issue we encountered was the vehicle make and model, as well as the charge description. The `Make` column contained all sorts of abbreviations and misspellings of common makes. We were able to use fuzzy matching to narrow this down to 63 different makes, with under three thousand records left as 'unknown'. 
+An issue we encountered was the vehicle make and model, as well as the charge description. The `Make` column contained all sorts of abbreviations and misspellings of common makes. We were able to use fuzzy matching to narrow this down to 63 different makes, with under three thousand records (out of a million) left as 'unknown'. 
 
 The `VehicleType` column had some minor data errors with some duplicate values referring to the same vehicle type. (For example, "18 - Police Vehicle" and "18 - Police (Non-Emerg)" referred to the same vehicle type). To fix this, we extracted the numerical code referring to the vehicle type and remapped it to a standard vehicle type name.
 
@@ -54,7 +54,7 @@ Two areas we considered doing feature engineering was text based analysis on the
 
 ### 3.1 Train/Test Split
 
-We split the data using a random 80/20 train test split with sklearn's implementation of the `train_test_split` method. In this instance, we could od a random split since we did not need to account for any temporal leakage. We did not use any temporal features aside from generic time of day/day of week Our classification did not depend solely on previous data either as the goal of this analysis was to determine effect of certain factors on the results. Using sklearn's built in `stratify` parameter also allowed us to maintain the original class distribution. 
+We split the data using a random 80/20 train test split with sklearn's implementation of the `train_test_split` method. In this instance, we could use a random split since we did not need to account for any temporal leakage. We did not use any temporal features aside from generic time of day/day of week. Our classification did not depend solely on previous data either as the goal of this analysis was to determine effect of certain factors on the results. Using sklearn's built in `stratify` parameter also allowed us to maintain the original class distribution. 
 
 ### 3.2 Models
 
@@ -85,4 +85,10 @@ The more robust features did contribute to an increased model performance, howev
 One potential explanation for this contradiction could be that certain demographic features could be encoded in the charge. The dataset provides little insight into justification of a specific charge. Therefore it is possible that officers are taking other features such as race or gender imto account when assigning a charge. An example is modifying the amount of speed exceeded to a more or less sever charge type. Without additional data, we cannot determine this.
 
 ## 5. Conclusion
+
+Our work has shown that while predictive models can be moderately effective at distinguishing between citations and warning, they are limited by the available administrative fields recorded during traffic stops. Most of the predictive power in out models comes from the charge the officer assigns, which highlights how important that decision is. However, the minimal improvements when adding the rest of the avilable features suggest that the reasoning behind the officer's decision is not sufficiently captured in the available data.
+
+The charge field itself may already encode biases. Each charge has subsections for varying degrees of severity. More severe offences naturally have higher citation rates. So, if an officer is influenced by other factors such as race or gender when deciding on the severity of the charge then this column would hide those contextual biases. Without access to richer contextual data we cannot determine if these decisions are fair or justified.
+
+This highlights the need for more oversight in how traffic stops are documented. Police officers should be required to provide explanations for their charge assignments in a more standardized way. They should also be instructed to not ignore the contextual features that are already included, but are sadly left blank in most records.
 
