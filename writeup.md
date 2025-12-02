@@ -40,9 +40,7 @@ We also include some boolean columns
 
 These columns give further insight into the traffic incident, such as whether the driver had alcohol or contributed to an accident. 
 
-Upon initial glance, these columns appear to be irrelevant. Only a small fraction of all rows contain a true value for any column, with some seemingly contradicting the issued charge. For example is that a DUI charge may not have the `Alcohol` field marked. While a non-DUI charge such as speeding may have that field marked. However, upon further analysis, the presence of such fields showed a greater citation rate. 
-
-When included, these columns made almost no difference in model performance.
+Upon initial glance, these columns appear to be irrelevant. Only a small fraction of all rows contain a true value for any column, with some seemingly contradicting the issued charge. For example, most DUI charges do not have the `Alcohol` field marked, while a non-DUI charge such as speeding may have that field marked. However, upon further analysis, the presence of such fields, even if rare, does almost always indicate a citation. Still, since they are so rare they had almost no impact on model performance.
 
 ## 3. Model
 
