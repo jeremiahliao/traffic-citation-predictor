@@ -40,3 +40,72 @@ class HGBClassifier(BaseClassifier):
 
     def predict_proba(self, X: pd.DataFrame) -> np.ndarray:
         return self.model.predict_proba(X)[:, 1]
+    
+CAT_COLS = [
+    # driver information
+    'VehicleType',
+
+    # traffic stop information
+    'Charge', 'Arrest Type',
+
+    'Make',
+    #'Race',
+    #'Gender',
+    'SubAgency',
+    'dayofweek',
+    'hour',
+]
+NUM_COLS = [
+    # binary columns
+    #'Accident',
+    'Personal Injury',
+    #'Fatal',
+    'Commercial License',
+    #'HAZMAT',
+    'Alcohol',
+    #'Work Zone',
+    #'Contributed To Accident',
+    'Belts',
+    'Property Damage',
+    'Commercial Vehicle',
+
+    'Latitude', 'Longitude',
+]
+
+FT_COLS = CAT_COLS + NUM_COLS
+class HGBClassifier2(BaseClassifier):
+    """Random Forest binary classifier."""
+
+    DEFAULT_N_ESTIMATORS = 200
+    DEFAULT_RANDOM_STATE = 42
+
+    def __init__(self, n_estimators: int = None, random_state: int = None, n_jobs: int = -1):
+        super().__init__(name="RandomForest")
+        self.model = Pipeline(
+            steps = [
+                # ("preproc", ColumnTransformer(
+                #     transformers = [
+                #         ("oneHot", OneHotEncoder(handle_unknown="ignore", sparse_output=False), CATEGORICAL_COLS),
+                #     ],
+                #     remainder="passthrough"
+                # )),
+                (
+                    "hgb", HistGradientBoostingClassifier(
+                        # max_depth=16,
+                        categorical_features=CAT_COLS
+                    )
+                )
+            ]
+        )
+
+    def fit(self, X_train: pd.DataFrame, y_train: pd.Series):
+        X_train = X_train[FT_COLS]
+        self.model.fit(X_train, y_train)
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        X = X[FT_COLS]
+        return self.model.predict(X)
+
+    def predict_proba(self, X: pd.DataFrame) -> np.ndarray:
+        X = X[FT_COLS]
+        return self.model.predict_proba(X)[:, 1]

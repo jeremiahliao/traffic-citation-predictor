@@ -16,7 +16,7 @@ from classifiers.alwayscitation_classifier import AlwaysCitationClassifier
 from classifiers.alwayswarning_classifier import AlwaysWarningClassifier
 from classifiers.random_classifier import RandomClassifier
 from classifiers.rf_classifier import RFClassifier
-from classifiers.hgb_classifier import HGBClassifier
+from classifiers.hgb_classifier import HGBClassifier, HGBClassifier2
 from classifiers.heuristic import HeuristicClassifier
 from data_cleaning import FEATURE_COLS
 
@@ -181,7 +181,8 @@ def main():
         #"Always Warning": AlwaysWarningClassifier(),
         "Heuristic": HeuristicClassifier(),
         # "Random Forest": RFClassifier(),
-        "HGB": HGBClassifier()
+        "HGB (all)": HGBClassifier(),
+        "HGB (no race/gender)": HGBClassifier2()
     }
 
     predictions = {}
